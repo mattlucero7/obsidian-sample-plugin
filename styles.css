@@ -99,6 +99,27 @@ CSV Support Plugin Styles
   min-height: 100%;
 }
 
+/* CSV field colorization - round robin style */
+.csv-field-0 { color: var(--text-accent); }      /* accent */
+.csv-field-1 { color: #d74e42; }                 /* red */
+.csv-field-2 { color: #2980b9; }                 /* cyan */
+.csv-field-3 { color: #8352a8; }                 /* purple */
+.csv-field-4 { color: #e67e22; }                 /* orange */
+.csv-field-5 { color: #2dc26b; }                 /* green */
+.csv-field-6 { color: #b5971d; }                 /* yellow */
+
+/* Delimiter style */
+.csv-delimiter {
+  opacity: 0.5;
+  color: var(--text-muted);
+  margin: 0 2px;
+}
+
+/* Quoted field styles */
+.csv-quoted {
+  font-style: normal;
+}
+
 /* Line wrapping style */
 .cm-lineWrapping {
   white-space: pre-wrap;
