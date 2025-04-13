@@ -13,7 +13,7 @@ CSV Support Plugin Styles
 /* Style for the CSV content display and editing */
 .csv-content {
   white-space: pre;
-  font-family: var(--font-text);
+  font-family: var(--font-text); /* Using FONT TEXT for seemless style */
   padding: 4px 0;
   line-height: var(--line-height-normal);
   overflow: auto;
