@@ -3,6 +3,7 @@ import { CSV_VIEW_TYPE } from './main';
 
 export class CsvView extends TextFileView {
 	data: string;
+	private contentArea: HTMLDivElement;
 
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
@@ -15,35 +16,81 @@ export class CsvView extends TextFileView {
 	getDisplayText(): string {
 		return this.file?.basename || 'CSV File';
 	}
-	private textareaEl: HTMLTextAreaElement;
-		// Load csv file content into the view
+
+	// Load csv file content into the view
 	setViewData(data: string, clear: boolean): void {
 		this.data = data;
 		
 		// Clear the content element
 		this.contentEl.empty();
 		
-		// Create an editor container similar to Obsidian's editor
-		const editorContainer = this.contentEl.createDiv({ cls: 'csv-editor-container' });
+		// Apply Obsidian's classes directly to our content element to match the editor styling
+		this.contentEl.addClass('markdown-source-view');
+		this.contentEl.addClass('mod-cm6');
+		this.contentEl.addClass('is-live-preview');
+
+		// Create a structure matching Obsidian's editor
+		const editorEl = this.contentEl.createDiv({ cls: 'cm-editor ͼ1 ͼ2' });
+		const scrollerEl = editorEl.createDiv({ cls: 'cm-scroller' });
+		const sizerEl = scrollerEl.createDiv({ cls: 'cm-sizer' });
 		
-		// Create a textarea element for displaying and editing the CSV content
-		this.textareaEl = document.createElement('textarea');
-		this.textareaEl.addClass('csv-content');
-		this.textareaEl.addClass('cm-editor');  // Add CodeMirror editor class for similar styling
-		this.textareaEl.value = data;
+		// Create content container and gutter structure like Obsidian
+		const contentContainerEl = sizerEl.createDiv({ cls: 'cm-contentContainer' });
+		const guttersEl = contentContainerEl.createDiv({ cls: 'cm-gutters' });
+		guttersEl.setAttribute('aria-hidden', 'true');
 		
-		// Add event listener to update data when textarea changes
-		this.textareaEl.addEventListener('input', () => {
-			this.data = this.textareaEl.value;
-			this.requestSave();
+		// Create the editable content area as a div (not textarea) like Obsidian does
+		this.contentArea = contentContainerEl.createDiv({
+			cls: 'csv-content cm-content cm-lineWrapping'
 		});
 		
-		editorContainer.appendChild(this.textareaEl);
+		// Set attributes similar to Obsidian's editor
+		this.contentArea.setAttribute('spellcheck', 'true');
+		this.contentArea.setAttribute('autocorrect', 'on');
+		this.contentArea.setAttribute('autocapitalize', 'on');
+		this.contentArea.setAttribute('translate', 'no');
+		this.contentArea.setAttribute('contenteditable', 'true');
+		this.contentArea.setAttribute('role', 'textbox');
+		this.contentArea.setAttribute('aria-multiline', 'true');
+		this.contentArea.style.tabSize = '4';
+		
+		// Format the CSV data with line breaks
+		const formattedData = this.formatCsvContent(data);
+		this.contentArea.innerHTML = formattedData;
+		
+		// Add event listener to update data when content changes
+		this.contentArea.addEventListener('input', () => {
+			this.data = this.contentArea.innerText;
+			this.requestSave();
+		});
+	}
+
+	// Format CSV content to display nicely with proper line elements
+	private formatCsvContent(csvData: string): string {
+		// Split by newlines
+		const lines = csvData.split('\n');
+		
+		// Convert each line to a proper cm-line div
+		return lines.map(line => {
+			return `<div class="cm-line" dir="ltr">${this.escapeHtml(line)}</div>`;
+		}).join('');
+	}
+	
+	// Helper to escape HTML characters
+	private escapeHtml(text: string): string {
+		const element = document.createElement('div');
+		element.innerText = text;
+		return element.innerHTML;
 	}
 
 	// Retrieve the current content from the view
 	getViewData(): string {
-		return this.textareaEl ? this.textareaEl.value : this.data;
+		if (this.contentArea) {
+			// Get the raw text content and normalize line endings
+			const rawContent = this.contentArea.innerText;
+			return rawContent.replace(/\r\n/g, '\n');
+		}
+		return this.data;
 	}
 
 	// Clear the content if closed or switched
