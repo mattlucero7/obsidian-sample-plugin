@@ -63,23 +63,107 @@ export class CsvView extends TextFileView {
 			this.data = this.contentArea.innerText;
 			this.requestSave();
 		});
-	}
-	// Format CSV content to display nicely with proper line elements
+	}	// Format CSV content to display nicely with proper line elements and colorization
 	private formatCsvContent(csvData: string): string {
-		// Split by newlines
+		// First check if this is HTML content already - if we see HTML tags, this is a reopening
+		if (csvData.includes('<span class="csv-')) {
+			// return the raw data then reformat properly
+			return this.extractRawCsvFromHtml(csvData);
+		}
+
+		// then split by newlines
 		const lines = csvData.split('\n');
 		
-		// Convert each line to a proper cm-line div
+		// Convert each line to a proper cm-line div with colorized fields
 		return lines.map(line => {
-			return `<div class="cm-line" dir="ltr">${this.escapeHtml(line)}</div>`;
+			const colorizedLine = this.colorizeFields(line);
+			return `<div class="cm-line" dir="ltr">${colorizedLine}</div>`;
 		}).join('');
 	}
 	
-	// Helper to escape HTML characters
-	private escapeHtml(text: string): string {
-		const element = document.createElement('div');
-		element.innerText = text;
-		return element.innerHTML;
+	// Extract raw CSV data from HTML-formatted content
+	private extractRawCsvFromHtml(htmlData: string): string {
+		// Create a temporary div to parse the HTML
+		const tempDiv = document.createElement('div');
+		tempDiv.innerHTML = htmlData;
+		
+		// Get text content from each line
+		const lines = Array.from(tempDiv.querySelectorAll('.cm-line'))
+			.map(line => line.textContent || '');
+		
+		// Return raw CSV data
+		return lines.map(line => {
+			const rawDiv = document.createElement('div');
+			rawDiv.classList.add('cm-line');
+			rawDiv.setAttribute('dir', 'ltr');
+			rawDiv.textContent = line;
+			return rawDiv.outerHTML;
+		}).join('');
+	}
+	
+	// 🤔 okay parse and colorize CSV fields (only happens during file opening)
+	private colorizeFields(line: string): string {
+		if (!line.trim()) return '';
+		
+		const result: string[] = [];
+		let currentField = '';
+		let inQuotes = false;
+		let columnIndex = 0;
+		
+		// then parse character by character to handle quoted fields correctly
+		for (let i = 0; i < line.length; i++) {
+			const char = line[i];
+			const nextChar = i < line.length - 1 ? line[i + 1] : '';
+			
+			// have to handle double quotes (escaped quotes)
+			if (char === '"' && inQuotes && nextChar === '"') {
+				currentField += '"'; // Add a single quote
+				i++; // Skip next quote
+				continue;
+			}
+			
+			// then toggle quote state
+			if (char === '"') {
+				inQuotes = !inQuotes;
+				// Add opening/closing quote with styling yup
+				currentField += '"'; // Just store the quote character normally
+				continue;
+			}
+			
+			// Handle field delimiter (comma) for COMMA separated values
+			if (char === ',' && !inQuotes) {
+				// Create a colored span for this field
+				const fieldSpan = document.createElement('span');
+				fieldSpan.className = `csv-field-${columnIndex % 7}`;
+				fieldSpan.textContent = currentField;
+				result.push(fieldSpan.outerHTML);
+				
+				// Create a delimiter span
+				const delimiterSpan = document.createElement('span');
+				delimiterSpan.className = 'csv-delimiter';
+				delimiterSpan.textContent = ',';
+				result.push(delimiterSpan.outerHTML);
+				
+				// then reset for next field
+				currentField = '';
+				columnIndex++;
+				continue;
+			}
+			
+			// Add character to current field
+			currentField += char;
+		}
+		
+		// then add the last field
+		if (currentField || columnIndex > 0) {
+			// Create a colored span for the last field
+			const fieldSpan = document.createElement('span');
+			fieldSpan.className = `csv-field-${columnIndex % 7}`;
+			fieldSpan.textContent = currentField;
+			result.push(fieldSpan.outerHTML);
+		}
+		
+		return result.join('');
 	}
 
 	// Retrieve the current content from the view
