@@ -16,28 +16,29 @@ export class CsvView extends TextFileView {
 		return this.file?.basename || 'CSV File';
 	}
 	private textareaEl: HTMLTextAreaElement;
-	
-	// Load csv file content into the view
+		// Load csv file content into the view
 	setViewData(data: string, clear: boolean): void {
 		this.data = data;
 		
 		// Clear the content element
 		this.contentEl.empty();
 		
+		// Create an editor container similar to Obsidian's editor
+		const editorContainer = this.contentEl.createDiv({ cls: 'csv-editor-container' });
+		
 		// Create a textarea element for displaying and editing the CSV content
-        // Not sure if TEXTAREA is the right type here, but it works for now
 		this.textareaEl = document.createElement('textarea');
 		this.textareaEl.addClass('csv-content');
+		this.textareaEl.addClass('cm-editor');  // Add CodeMirror editor class for similar styling
 		this.textareaEl.value = data;
 		
 		// Add event listener to update data when textarea changes
-        // Autosave wooot
 		this.textareaEl.addEventListener('input', () => {
 			this.data = this.textareaEl.value;
 			this.requestSave();
 		});
 		
-		this.contentEl.appendChild(this.textareaEl);
+		editorContainer.appendChild(this.textareaEl);
 	}
 
 	// Retrieve the current content from the view
