@@ -64,7 +64,6 @@ export class CsvView extends TextFileView {
 			this.requestSave();
 		});
 	}
-
 	// Format CSV content to display nicely with proper line elements
 	private formatCsvContent(csvData: string): string {
 		// Split by newlines
@@ -86,9 +85,12 @@ export class CsvView extends TextFileView {
 	// Retrieve the current content from the view
 	getViewData(): string {
 		if (this.contentArea) {
-			// Get the raw text content and normalize line endings
-			const rawContent = this.contentArea.innerText;
-			return rawContent.replace(/\r\n/g, '\n');
+        // This collects text from each line div separately to preserve CSV structure!! DO NOT REMOVE!! 😫
+			const lines = Array.from(this.contentArea.querySelectorAll('.cm-line'))
+				.map(line => line.textContent || '');
+			
+			// THEN Join with newlines to maintain CSV format
+			return lines.join('\n');
 		}
 		return this.data;
 	}

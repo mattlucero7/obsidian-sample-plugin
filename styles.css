@@ -84,7 +84,7 @@ CSV Support Plugin Styles
 
 /* Add monospace font for CSV values to maintain column alignment */
 .csv-content .cm-line {
-  font-family: var(--font-monospace);
+  font-family: var(--font-text);
 }
 
 /* Match editor padding to Obsidian's editor */
