@@ -45,7 +45,7 @@ export class CsvView extends TextFileView {
 		});
 		
 		// Set attributes similar to Obsidian's editor
-		this.contentArea.setAttribute('spellcheck', 'true');
+		this.contentArea.setAttribute('spellcheck', 'false');
 		this.contentArea.setAttribute('autocorrect', 'on');
 		this.contentArea.setAttribute('autocapitalize', 'on');
 		this.contentArea.setAttribute('translate', 'no');
