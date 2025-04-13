@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-csv-support-plugin",
 	"name": "CSV Support Plugin",
-	"version": "0.1.0",
+	"version": "0.1.3",
 	"minAppVersion": "0.15.0",
 	"description": "A plugin to open and edit .csv files as plain text in Obsidian.",
 	"author": "Matt Lucero",
