@@ -89,16 +89,16 @@ CSV Support Plugin Styles
 .csv-content .cm-line::before {
   content: counter(line-number);
   display: inline-block;
-  width: 2em;
+  width: 3em; /* Wider to accommodate more digits */
   padding-right: 0.5em;
   text-align: right;
   color: var(--text-faint);
   font-size: 0.9em;
   user-select: none;
   opacity: 0.7;
-  position: sticky;
+  position: absolute; /* Changed from sticky to absolute for better indent control */
   left: 0;
-  margin-right: 0.5em;
+  top: 0; /* Align to top of line */
   font-family: var(--font-monospace); /* Use monospace for consistent alignment */
   cursor: default;
   background-color: var(--background-primary-alt);
@@ -109,9 +109,17 @@ CSV Support Plugin Styles
   counter-reset: line-number;
 }
 
-/* Avoid overlapping with content by creating space */
-.csv-content .cm-line > *:first-child {
-  margin-left: 0.5em;
+/* Create a hanging indent effect for proper text wrapping. Thanks Affinity for teaching me.*/
+.csv-content .cm-line {
+  /* Create proper indent for wrapped text */
+  padding-left: 3.5em !important; /* Space for line numbers plus some buffer */
+  box-sizing: border-box;
+  position: relative; /* Ensure positioning context for children */
+}
+
+/* Make flex items honor the padding and not wrap under line numbers */
+.csv-content .cm-line > span {
+  min-width: 0; /* Allow flex items to shrink if needed */
 }
 
 /* Ensure proper spacing between lines */
