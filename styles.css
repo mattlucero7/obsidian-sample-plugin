@@ -79,6 +79,39 @@ CSV Support Plugin Styles
   padding-right: 4px;
   word-break: break-word;
   overflow-wrap: anywhere;
+  position: relative; 
+  counter-increment: line-number;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Add line numbers before each CSV row 🥲 sorry couldnt do gutteers */
+.csv-content .cm-line::before {
+  content: counter(line-number);
+  display: inline-block;
+  width: 2em;
+  padding-right: 0.5em;
+  text-align: right;
+  color: var(--text-faint);
+  font-size: 0.9em;
+  user-select: none;
+  opacity: 0.7;
+  position: sticky;
+  left: 0;
+  margin-right: 0.5em;
+  font-family: var(--font-monospace); /* Use monospace for consistent alignment */
+  cursor: default;
+  background-color: var(--background-primary-alt);
+}
+
+/* Reset counter for each CSV editor instance */
+.csv-content {
+  counter-reset: line-number;
+}
+
+/* Avoid overlapping with content by creating space */
+.csv-content .cm-line > *:first-child {
+  margin-left: 0.5em;
 }
 
 /* Ensure proper spacing between lines */
