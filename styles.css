@@ -79,13 +79,47 @@ CSV Support Plugin Styles
   padding-right: 4px;
   word-break: break-word;
   overflow-wrap: anywhere;
-  
-  /* Add bottom border to create dashed horizontal line after each record BECAUSE*/
-  /* I CANNOT FIGURE OUT HOW TO ADD numbered LINES*/
-  border-bottom: 2px dashed var(--background-modifier-border);
-  padding-top: 0.15em !important; 
-  padding-bottom: 0.33em !important; 
-  margin-bottom: 1em;  
+  position: relative; 
+  counter-increment: line-number;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Add line numbers before each CSV row 🥲 sorry couldnt do gutteers */
+.csv-content .cm-line::before {
+  content: counter(line-number);
+  display: inline-block;
+  width: 3em; /* Wider to accommodate more digits */
+  padding-right: 0.5em;
+  text-align: right;
+  color: var(--text-faint);
+  font-size: 0.9em;
+  user-select: none;
+  opacity: 0.7;
+  position: absolute; /* Changed from sticky to absolute for better indent control */
+  left: 0;
+  top: 0; /* Align to top of line */
+  font-family: var(--font-monospace); /* Use monospace for consistent alignment */
+  cursor: default;
+  background-color: var(--background-primary-alt);
+}
+
+/* Reset counter for each CSV editor instance */
+.csv-content {
+  counter-reset: line-number;
+}
+
+/* Create a hanging indent effect for proper text wrapping. Thanks Affinity for teaching me.*/
+.csv-content .cm-line {
+  /* Create proper indent for wrapped text */
+  padding-left: 3.5em !important; /* Space for line numbers plus some buffer */
+  box-sizing: border-box;
+  position: relative; /* Ensure positioning context for children */
+}
+
+/* Make flex items honor the padding and not wrap under line numbers */
+.csv-content .cm-line > span {
+  min-width: 0; /* Allow flex items to shrink if needed */
 }
 
 /* Ensure proper spacing between lines */
