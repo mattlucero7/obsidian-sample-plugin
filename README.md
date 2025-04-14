@@ -4,6 +4,7 @@ A plugin for [Obsidian](https://obsidian.md) that provides seamless CSV file sup
 
 ## Features
 
+- **Only Works in Editing Mode**: This plugin is designed to work only in editing mode, ensuring a clean and focused experience.
 - **Open CSV Files**: View CSV files directly in Obsidian
 - **Edit CSV Files**: Make changes to your data without leaving Obsidian
 - **Save CSV Files**: Changes are saved automatically
