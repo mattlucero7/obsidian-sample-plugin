@@ -79,6 +79,13 @@ CSV Support Plugin Styles
   padding-right: 4px;
   word-break: break-word;
   overflow-wrap: anywhere;
+  
+  /* Add bottom border to create dashed horizontal line after each record BECAUSE*/
+  /* I CANNOT FIGURE OUT HOW TO ADD numbered LINES*/
+  border-bottom: 2px dashed var(--background-modifier-border);
+  padding-top: 0.15em !important; 
+  padding-bottom: 0.33em !important; 
+  margin-bottom: 1em;  
 }
 
 /* Ensure proper spacing between lines */
